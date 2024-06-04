@@ -15,8 +15,8 @@ Solidity contracts used in [Quantlytica](https://www.quantlytica.com/) .
 - To run, pull the repository from GitHub and install its dependencies. You will need [npm](https://docs.npmjs.com/cli/install) installed.
 
 ```bash
-git clone https://github.com/xww81813/quantlytica_core_v1.git
-cd quantlytica_core_v1
+git clone https://github.com/xww81813/quantlytica_staking.git
+cd quantlytica_staking
 npm install 
 ```
 - Create an enviroment file named `.env` and fill the next enviroment variables
