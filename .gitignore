@@ -1,0 +1,17 @@
+.vscode
+.env
+node_modules
+deployments
+coverage
+artifacts
+cache
+coverage.json
+/node_modules/
+/build/
+truffle-config.js
+*.txt
+package-lock.json
+yarn.lock
+docs
+.VSCodeCounter
+contracts/Multicall.sol
