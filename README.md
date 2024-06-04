@@ -38,7 +38,7 @@ npx hardhat compile
 
 ## License
 
-- (c) Quantlytica Ltd., 2023 - [All rights reserved](https://github.com/xww81813/quantlytica_core_v1/blob/main/LICENSE).
+- (c) Quantlytica Ltd., 2023 - [All rights reserved](https://github.com/xww81813/quantlytica_staking/blob/main/LICENSE).
 
 
 ## Discussion
