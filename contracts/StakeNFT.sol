@@ -45,10 +45,14 @@ contract StakeNFT is ERC721EnumerableUpgradeable, ERC721BurnableUpgradeable, Own
     }
 
     StakeSettingInfo public stakeSettingInfo;
+    uint256 public mintIDIndex;
+    string private _baseTokenURI;
 
     event Stake(address user,address tokenAddr,uint256 tradeAmount,uint256 mintCount);
     event Unstake(address user,address tokenAddr,uint256 tradeAmount);
     event Mint(address user,uint256 mintCount,uint256 idStart);
+    event SetStakeSettingInfo(StakeSettingInfo settings);
+    event SetStakeTokenInfo(StakeTokenInfo[] tokens);
 
     constructor() initializer {}
 
@@ -57,11 +61,24 @@ contract StakeNFT is ERC721EnumerableUpgradeable, ERC721BurnableUpgradeable, Own
         __ERC721_init(name_,symbol_);
     }
 
+    function setMintIDIndex(uint256 mintIDIndex_) external virtual onlyOwner {
+        mintIDIndex = mintIDIndex_;
+    }
+
+    function setBaseTokenURI(string memory baseTokenURI) external virtual onlyOwner {
+        _baseTokenURI = baseTokenURI;
+    }
+
+    function _baseURI() internal view virtual override returns (string memory) {
+        return _baseTokenURI;
+    }
+
     function setStakeSettingInfo(StakeSettingInfo calldata stakeSettingInfo_) external virtual onlyOwner {
         require(stakeSettingInfo_.endStakeTime > stakeSettingInfo_.startStakeTime, "end");
         require(stakeSettingInfo_.startWithdrawTime >= stakeSettingInfo_.endStakeTime, "withdraw");
         require(stakeSettingInfo_.periodTime > 0, "periodTime");
         stakeSettingInfo = stakeSettingInfo_;
+        emit SetStakeSettingInfo(stakeSettingInfo_);
     } 
 
     function setStakeTokenInfo(StakeTokenInfo[] calldata stakeTokenInfo_) external virtual onlyOwner {
@@ -70,6 +87,7 @@ contract StakeNFT is ERC721EnumerableUpgradeable, ERC721BurnableUpgradeable, Own
             require(stakeTokenInfo_[i].token != address(0), "token");
             stakeTokenInfo[ stakeTokenInfo_[i].token ] = stakeTokenInfo_[i];
         }
+        emit SetStakeTokenInfo(stakeTokenInfo_);
     }    
 
     function getUserInfo(address user_) external view returns(StakeUserInfo memory _userInfo,address[] memory _tokens,uint256[] memory _amounts,uint256 _idCount,uint256[] memory _idList) {
@@ -100,7 +118,7 @@ contract StakeNFT is ERC721EnumerableUpgradeable, ERC721BurnableUpgradeable, Own
         require(_mintAmount > 0 && _mintAmount <= amount_,"amount");
         address user_ = msg.sender;
         if(token_ == address(1)){
-            require(msg.value == amount_ && msg.value >= _mintAmount,"value");
+            require(msg.value == amount_,"value");
             if(msg.value > _mintAmount){
                 payable(user_).transfer(msg.value.sub(_mintAmount));
             }
@@ -169,10 +187,14 @@ contract StakeNFT is ERC721EnumerableUpgradeable, ERC721BurnableUpgradeable, Own
         StakeUserInfo storage userInfo = stakeUserInfo[user];
         require(userInfo.mintCount >= count,"left");
         userInfo.mintCount = userInfo.mintCount.sub(count);
-        uint256 totalSupply_ = totalSupply();
+        if(mintIDIndex == 0){
+            mintIDIndex = totalSupply();
+        }
+        uint256 totalSupply_ = mintIDIndex;
         for(uint i = 0; i < count; i++){
             _mint(user, totalSupply_.add(i+1));
         }
+        mintIDIndex = mintIDIndex + count;
         emit Mint(user,count,totalSupply_+1);
     }
 
