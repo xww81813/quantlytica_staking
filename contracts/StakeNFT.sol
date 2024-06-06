@@ -53,6 +53,8 @@ contract StakeNFT is ERC721EnumerableUpgradeable, ERC721BurnableUpgradeable, Own
     event Mint(address user,uint256 mintCount,uint256 idStart);
     event SetStakeSettingInfo(StakeSettingInfo settings);
     event SetStakeTokenInfo(StakeTokenInfo[] tokens);
+    event SetBaseTokenURI(string uri);
+    event SetMintIDIndex(uint256 idIndex);
 
     constructor() initializer {}
 
@@ -62,11 +64,14 @@ contract StakeNFT is ERC721EnumerableUpgradeable, ERC721BurnableUpgradeable, Own
     }
 
     function setMintIDIndex(uint256 mintIDIndex_) external virtual onlyOwner {
+        require(mintIDIndex_ > mintIDIndex,"id");
         mintIDIndex = mintIDIndex_;
+        emit SetMintIDIndex(mintIDIndex_);
     }
 
     function setBaseTokenURI(string memory baseTokenURI) external virtual onlyOwner {
         _baseTokenURI = baseTokenURI;
+        emit SetBaseTokenURI(baseTokenURI);
     }
 
     function _baseURI() internal view virtual override returns (string memory) {
